@@ -6,7 +6,7 @@ public class Huffman {
 		// TODO Auto-generated method stub
 		HufmannEncoderDecoder h = new HufmannEncoderDecoder();
 		//hello@
-		String [] arr = {"C:\\Users\\sirpa\\Documents\\eclipse-projects\\Huffman\\src\\assign1\\byte.txt","C:\\Users\\sirpa\\Documents\\eclipse-projects\\Huffman\\src\\assign1\\compressed.txt"};
+		String [] arr = {"C:\\Users\\sirpa\\Documents\\Sapir\\Data Compression\\Ass1ExampeInputs\\london_in_polish_source.txt","C:\\Users\\sirpa\\Documents\\eclipse-projects\\Huffman\\src\\assign1\\compressed.txt"};
 		h.Compress(arr, arr);
 
 	}

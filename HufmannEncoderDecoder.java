@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 /**
@@ -34,34 +37,38 @@ public class HufmannEncoderDecoder implements compressor
 	public void Compress(String[] input_names, String[] output_names)
 	{
 		
-		File file = new File(input_names[0]);
+	
+	
+	//	File file = new File(input_names[0]);
 
-		BufferedReader br = null;
-		try {
+		//BufferedReader br = null;
+	/*	try {
 			br = new BufferedReader(new FileReader(file));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+*/
 		Writer writer = null;
-		String org_text = null;
-		String text = null;
-		
+		//String org_text = null;
+		//String text = null;
+		Path path = Paths.get(input_names[0]);
 		int freq[] = new int [256];
 		try {
-			while ((org_text = br.readLine()) != null)
+		/*	while ((org_text = br.readLine()) != null)
 			{
 				org_text = org_text.replaceAll("\\s+", "");
 				if (text == null)
 					text = org_text;
 				else
-					text = text + org_text;
-			}
-			byte [] arr = new BigInteger(text,2).toByteArray();
+					text = text + org_text;*/
+			byte[] arr = Files.readAllBytes(path);
 			for (int i = 0; i < arr.length; i++)
 			{
-				freq[(arr[i])] ++;
+				if (arr[i] < 0)
+					arr[i] = (byte)(arr[i] + 256);
+				else
+					freq[(arr[i])] ++;
 			}
 			
 			HuffmanNode root = HuffmanNode.BuildTree(freq);
@@ -76,6 +83,10 @@ public class HufmannEncoderDecoder implements compressor
 			    for (int j = 0; j < arr.length; j++)
 			    {
 			    	char c = (char)arr[j];
+			    	int temp = (int)c;
+			    	if (temp < 0)
+			    		c += 256;
+			    	//System.out.println((int)c);
 			    	String s = dictionery.get(c);
 			    	writer.write(s);
 			    }
