@@ -1,15 +1,12 @@
 package assign1;
 
-import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,59 +33,62 @@ public class HufmannEncoderDecoder implements compressor
 	@Override
 	public void Compress(String[] input_names, String[] output_names)
 	{
-		
-	
-	
-	//	File file = new File(input_names[0]);
-
-		//BufferedReader br = null;
-	/*	try {
-			br = new BufferedReader(new FileReader(file));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-*/
 		Writer writer = null;
-		//String org_text = null;
-		//String text = null;
 		Path path = Paths.get(input_names[0]);
 		int freq[] = new int [256];
+		//reads the file as bytes and count how many times the bite has appeared during the code
 		try {
-		/*	while ((org_text = br.readLine()) != null)
-			{
-				org_text = org_text.replaceAll("\\s+", "");
-				if (text == null)
-					text = org_text;
-				else
-					text = text + org_text;*/
 			byte[] arr = Files.readAllBytes(path);
 			for (int i = 0; i < arr.length; i++)
 			{
 				if (arr[i] < 0)
-					arr[i] = (byte)(arr[i] + 256);
+					freq[arr[i]+256]++;
 				else
 					freq[(arr[i])] ++;
 			}
 			
 			HuffmanNode root = HuffmanNode.BuildTree(freq);
 			
-			HashMap <Character,String > dictionery = new HashMap<Character,String>();
-			root.buildDictionery(dictionery,"");
-			
+			HashMap <Character,String > dictionary = new HashMap<Character,String>();
+			root.buildDictionary(dictionary,"");
+			//write the coded version to the file
 			try 
 			{
 			    writer = new BufferedWriter(new OutputStreamWriter(
 			          new FileOutputStream(output_names[1]), "utf-8"));
+			    String code =null;
 			    for (int j = 0; j < arr.length; j++)
 			    {
 			    	char c = (char)arr[j];
-			    	int temp = (int)c;
-			    	if (temp < 0)
-			    		c += 256;
-			    	//System.out.println((int)c);
-			    	String s = dictionery.get(c);
-			    	writer.write(s);
+			    	 String s = dictionary.get(c);
+			    	if (s == null)
+			    		s = dictionary.get((char)(c + 256));
+			    	//writer.write(s);
+			    	if (code == null)
+			    		code = s;
+			    	else
+			    		code +=s;
+			    }
+			    for (int i = 0; i < code.length(); i += 8)
+			    {
+			    	//incase code.length%8 !=0 we should make a sign so we know how to decompress it later
+			    	if (code.substring(i).length() < 8)
+			    	{
+			    		String last = code.substring(i);
+			    		while (last.length() < 8)
+			    			last += '0';
+			    		byte b_last[] = last.getBytes();
+			    		String temp = new String(b_last,"Ascii");
+				    	int new_val =  Integer.parseInt(temp,2);
+				    	writer.write((char)new_val);
+			    		writer.write(8-code.substring(i).length() *2);
+			    		writer.write("wow");
+			    		break;
+			    	}
+			    	byte [] b = code.substring(i,i+8).getBytes();
+			    	String temp = new String(b,"Ascii");
+			    	int new_val =  Integer.parseInt(temp,2);
+			    	writer.write((char)new_val);
 			    }
 			} 
 			catch (IOException e) {  e.printStackTrace();}

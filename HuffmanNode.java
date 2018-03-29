@@ -78,7 +78,8 @@ public class HuffmanNode
         printCode(root.left, s + "0");
         printCode(root.right, s + "1");
     }
-    public void buildDictionery (HashMap<Character, String> dictionery, String s)
+    //create a code for every char in the tree.  
+    public void buildDictionary (HashMap<Character, String> dictionery, String s)
     {
         // base case; if the left and right are null
         // then its a leaf node and we print
@@ -88,11 +89,8 @@ public class HuffmanNode
             && this.right
                    == null
             ) {
- 
-            // c is the character in the node
-           // System.out.println(this._ch + ":" + s);
-            dictionery.put(this._ch, s);
- 
+
+            dictionery.put(this._ch, s); 
             return;
         }
  
@@ -101,8 +99,8 @@ public class HuffmanNode
  
         // recursive calls for left and
         // right sub-tree of the generated tree.
-        this.left.buildDictionery(dictionery,s + "0");
-        this.right.buildDictionery(dictionery,s + "1");
+        this.left.buildDictionary(dictionery,s + "0");
+        this.right.buildDictionary(dictionery,s + "1");
     }
 /*	public HuffmanNode getParent()
 	{
