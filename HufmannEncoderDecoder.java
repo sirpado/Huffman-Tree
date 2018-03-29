@@ -55,7 +55,7 @@ public class HufmannEncoderDecoder implements compressor
 			try 
 			{
 			    writer = new BufferedWriter(new OutputStreamWriter(
-			          new FileOutputStream(output_names[1]), "utf-8"));
+			          new FileOutputStream(output_names[1]), "Ascii"));
 			    String code =null;
 			    for (int j = 0; j < arr.length; j++)
 			    {
