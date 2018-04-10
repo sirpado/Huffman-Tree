@@ -13,7 +13,6 @@ public class HuffmanNode
 	
 	public HuffmanNode(final int freq, final char ch)
 	{
-		// TODO Auto-generated constructor stub
 		_freq = freq;
 		_ch = ch;
 	}
@@ -29,29 +28,30 @@ public class HuffmanNode
 	}
 	public static HuffmanNode BuildTree(int [] arr)
 	{
-		PriorityQueue<HuffmanNode> q = new PriorityQueue(arr.length,new HuffmanComperator());
-		for (int i = 0; i < arr.length; i++)
+		PriorityQueue<HuffmanNode> q = new PriorityQueue<HuffmanNode>(arr.length,new HuffmanComperator());
+		for (int i = 0; i < arr.length; i++)//o(n)
 		{
 			if (arr[i] != 0)
 			{
 				HuffmanNode hn = new HuffmanNode(arr[i],(char)i);
-				q.add(hn);
+				q.add(hn);//o(logn)
 			}
 		}
 		HuffmanNode root = null;
-		while(q.size() >1)
+		while(q.size() >1)//o(n)
 		{
-			HuffmanNode first = q.poll();
-			HuffmanNode second = q.poll();
+			HuffmanNode first = q.poll();//o(logn)
+			HuffmanNode second = q.poll();//o(logn)
 			HuffmanNode newNode = new HuffmanNode(first._freq + second._freq,'`');
-			newNode.setLeft(first);
-			newNode.setRight(second);
+			newNode.left = first;
+			newNode.right = second;
 			root = newNode;
-			q.add(newNode);
+			q.add(newNode);//o(logn)
 		}
-		printCode(root, "");
+		//printCode(root, "");
 		return root;
 	}
+	/*
     public static void printCode(HuffmanNode root, String s)
     {
  
@@ -78,6 +78,7 @@ public class HuffmanNode
         printCode(root.left, s + "0");
         printCode(root.right, s + "1");
     }
+   */
     //create a code for every char in the tree.  
     public void buildDictionary (HashMap<Character, String> dictionery, String s)
     {
@@ -102,34 +103,4 @@ public class HuffmanNode
         this.left.buildDictionary(dictionery,s + "0");
         this.right.buildDictionary(dictionery,s + "1");
     }
-/*	public HuffmanNode getParent()
-	{
-		return this.parent;
-	}
-	*/
-	public HuffmanNode getLeft()
-	{
-		return this.left;
-	}
-	
-	public HuffmanNode getRight()
-	{
-		return this.right;
-	}
-	
-	/*public void setParent(HuffmanNode parent)
-	{
-		this.parent = parent;
-	}
-	*/
-	public void setLeft(HuffmanNode left)
-	{
-		this.left = left;
-	}
-	
-	public void setRight(HuffmanNode right)
-	{
-		this.right = right;
-	}
-
 }
