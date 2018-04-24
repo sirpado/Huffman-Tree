@@ -6,15 +6,24 @@ public class Huffman {
 		// TODO Auto-generated method stub
 		HufmannEncoderDecoder h = new HufmannEncoderDecoder();
 		
-		String [] arr = {"C:\\Users\\sirpa\\Documents\\Sapir\\Data Compression\\Ass1ExampeInputs\\london_in_polish_source.txt",
-				"C:\\Users\\sirpa\\Documents\\Sapir\\Data Compression\\Ass1ExampeInputs\\OnTheOrigin.txt",
-				"C:\\Users\\sirpa\\Documents\\Sapir\\Data Compression\\Ass1ExampeInputs\\OnTheOrigin_C2.txt",
-				"C:\\Users\\sirpa\\Documents\\Sapir\\Data Compression\\Ass1ExampeInputs\\YouKnowThisSound"};
-		String [] arr1 = {"C:\\Users\\sirpa\\Documents\\eclipse-projects\\Huffman\\src\\assign1\\1.txt",
-				"C:\\Users\\sirpa\\Documents\\eclipse-projects\\Huffman\\src\\assign1\\2.txt",
-				"C:\\Users\\sirpa\\Documents\\eclipse-projects\\Huffman\\src\\assign1\\3.txt",
-				"C:\\Users\\sirpa\\Documents\\eclipse-projects\\Huffman\\src\\assign1\\4.txt"};
+		String [] arr = {"D:\\programming\\Ass1ExampeInputs\\a.txt","D:\\programming\\Ass1ExampeInputs\\london_in_polish_source.txt",
+				"D:\\programming\\Ass1ExampeInputs\\OnTheOrigin.txt",
+				"D:\\programming\\Ass1ExampeInputs\\OnTheOrigin_C2.txt",
+				"D:\\programming\\Ass1ExampeInputs\\YouKnowThisSound"};
+		String [] arr1 = {"D:\\programming\\Ass1ExampeOutputs\\aCoded.txt",
+				"D:\\programming\\Ass1ExampeInputs\\2.txt",
+				"D:\\programming\\Ass1ExampeInputs\\3.txt",
+				"D:\\programming\\Ass1ExampeInputs\\4.txt"};
 		h.Compress(arr, arr1);
+		String [] decInput = {"D:\\programming\\Ass1ExampeOutputs\\aCoded.txt",
+				"D:\\programming\\Ass1ExampeOutputs\\OnTheOrigin.txt",
+				"D:\\programming\\Ass1ExampeOutputs\\OnTheOrigin_C2.txt",
+				"D:\\programming\\Ass1ExampeOutputs\\YouKnowThisSound"};
+		String [] decOutput  = {"D:\\programming\\Ass1ExampeOutputs\\decoded1.txt",
+				"D:\\programming\\Ass1ExampeOutputs\\2.txt",
+				"D:\\programming\\Ass1ExampeOutputs\\3.txt",
+				"D:\\programming\\Ass1ExampeOutputs\\4.txt"};
+		h.Decompress(decInput, decOutput);
 
 	}
 

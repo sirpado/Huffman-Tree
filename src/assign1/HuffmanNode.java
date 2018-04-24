@@ -2,6 +2,9 @@ package assign1;
 
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.Queue;
+
+import javax.xml.stream.events.Characters;
 
 public class HuffmanNode
 {
@@ -29,17 +32,18 @@ public class HuffmanNode
 	public static HuffmanNode BuildTree(int [] arr)
 	{
 		PriorityQueue<HuffmanNode> q = new PriorityQueue<HuffmanNode>(arr.length,new HuffmanComperator());
-		for (int i = 0; i < arr.length; i++)//o(n)
+		for (int i = 0; i < arr.length; i++)//o(n) Build tree from freq array
 		{
-			if (arr[i] != 0)
+			if (arr[i] != 0)//if freq is not 0
 			{
-				HuffmanNode hn = new HuffmanNode(arr[i],(char)i);
-				q.add(hn);//o(logn)
+				HuffmanNode hn = new HuffmanNode(arr[i],(char)i);//Add node with freq+char 
+				q.add(hn);//o(logn) add to priority Q
 			}
 		}
 		HuffmanNode root = null;
 		while(q.size() >1)//o(n)
 		{
+			System.out.println("building dictionary, queue: " + q.size());//DEBUG
 			HuffmanNode first = q.poll();//o(logn)
 			HuffmanNode second = q.poll();//o(logn)
 			HuffmanNode newNode = new HuffmanNode(first._freq + second._freq,'`');
@@ -102,5 +106,11 @@ public class HuffmanNode
         // right sub-tree of the generated tree.
         this.left.buildDictionary(dictionery,s + "0");
         this.right.buildDictionary(dictionery,s + "1");
+    }
+    public HuffmanNode getLeft(){
+    	return this.left;
+    }
+    public HuffmanNode getRight(){
+    	return this.right;
     }
 }
