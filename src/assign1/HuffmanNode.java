@@ -31,6 +31,7 @@ public class HuffmanNode
 	}
 	public static HuffmanNode BuildTree(int [] arr)
 	{
+		long startTime= System.currentTimeMillis();
 		PriorityQueue<HuffmanNode> q = new PriorityQueue<HuffmanNode>(arr.length,new HuffmanComperator());
 		for (int i = 0; i < arr.length; i++)//o(n) Build tree from freq array
 		{
@@ -43,7 +44,6 @@ public class HuffmanNode
 		HuffmanNode root = null;
 		while(q.size() >1)//o(n)
 		{
-			System.out.println("building dictionary, queue: " + q.size());//DEBUG
 			HuffmanNode first = q.poll();//o(logn)
 			HuffmanNode second = q.poll();//o(logn)
 			HuffmanNode newNode = new HuffmanNode(first._freq + second._freq,'`');
@@ -52,7 +52,8 @@ public class HuffmanNode
 			root = newNode;
 			q.add(newNode);//o(logn)
 		}
-		//printCode(root, "");
+		long endTime=System.currentTimeMillis();
+		System.out.println("Building the tree took " + ((endTime - startTime)/1000) + " seconds");
 		return root;
 	}
 	/*

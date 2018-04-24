@@ -1,24 +1,14 @@
 package assign1;
 
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.Writer;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -50,18 +40,22 @@ public class HufmannEncoderDecoder implements compressor
 		try
 		{
 			byte[] arr = Files.readAllBytes(path);//Use imported class to read bytes to an array
-			System.out.println("analyzing freq//"); //DEBUG
 			int freq[] = freqarr(arr);//Create new frequency array fro all possible bytes (255)
 			this.root = HuffmanNode.BuildTree(freq);//o(nlogn)
 			
 			//Build the tree (recursive)
-			System.out.println("building tree..");//DEBUG
 			
+			long startTimeD=System.currentTimeMillis();
 			HashMap <Character,String > dictionary = new HashMap<Character,String>();
 			root.buildDictionary(dictionary,"");//o(nlogn)
+			long endTimeD=System.currentTimeMillis();
+			System.out.println("Building the Dictionary took " + ((endTimeD - startTimeD)/1000) + " seconds");
 			
 			//write the coded version to string
+			long startTimeC=System.currentTimeMillis();
 			String code =codedString(arr, dictionary);
+			long endTimeC=System.currentTimeMillis();
+			System.out.println("Building the code string took " + ((endTimeC - startTimeC)/1000) + " seconds");
 			
 			//actually write to the file
 			System.out.println("Code Length: " + code.length()); //DEBUG
@@ -72,7 +66,7 @@ public class HufmannEncoderDecoder implements compressor
 		
 		long endTime = System.currentTimeMillis();
 		
-		System.out.println("That took " + ((endTime - startTime)/1000) + " seconds");
+		System.out.println("Comp took " + ((endTime - startTime)/1000) + " seconds");
 	}
 	
 	/*
@@ -86,10 +80,8 @@ public class HufmannEncoderDecoder implements compressor
 		String code = null;
 		for (int j = 0; j < arr.length; j++)//o(n)
 		{
-			System.out.println("running.. letter: " + j + " of " + arr.length);//DEBUG
 			char c = (char)arr[j];
 			String s = dictionary.get(c);//o(1) get the value of the letter and put into code
-			System.out.println("letter: " + c + " code: " + s);//DEBUG
 			if (s == null)
 				s = dictionary.get((char)(c + 256));
 			if (code == null)//will happen once
@@ -108,6 +100,7 @@ public class HufmannEncoderDecoder implements compressor
 	public int[] freqarr(byte[] arr)
 	{
 		int freq[] = new int [256];
+		long startTimeF=System.currentTimeMillis();
 		//reads the file as bytes and count how many times the bite has appeared during the code
 		for (int i = 0; i < arr.length; i++)//o(n)
 		{
@@ -116,6 +109,8 @@ public class HufmannEncoderDecoder implements compressor
 			else
 				freq[(arr[i])] ++;
 		}
+		long endTimeF=System.currentTimeMillis();
+		System.out.println("Analyzing freq took: " + (endTimeF-startTimeF)/1000 + " seconds.");
 		return freq;
 	}
 
@@ -137,130 +132,48 @@ public class HufmannEncoderDecoder implements compressor
 		 try
 		{
 		 FileOutputStream fos = new FileOutputStream(output_names[0]);
-
+		 fos.write((byte)zeroCounter);
 		 for(int i=0;i<code.length();i=i+8)
 		 {
 			tstr=code.substring(i, i+8);
 			int bin=Integer.parseInt(tstr,2);
 			
 			byte[] barr= {(byte)bin};
-			System.out.println("bin: "+bin);
 				fos.write(barr);
 			}
-		 System.out.println(zeroCounter);
-		 System.out.println((byte)zeroCounter);
-		 fos.write((byte)zeroCounter);
+
+		 
 		}
 			catch(Exception e){e.printStackTrace();}
 		}
-
-		
-		/*Writer writer = null;
-		System.out.println("writing to file..");//DEBUG
-		try 
-		{
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output_names[0]), "Ascii"));
-			/*
-			int bytes=(code.length())/8;
-			int eolB=bytes*8;//End of last byte
-			int remainder=0; // number of 0s to add to complete a byte
-			if (code.length()%8!=0){
-				remainder=8-(code.length()-eolB);
-				System.out.println("adding "+remainder+" 0s..");//DEBUG
-				for(int i=0;i<remainder;i++) {
-					code+='0';
-				}
-			}
-			System.out.println("code:" + code);//DEBUG
-				String tstr=new String();
-				for(int i=0;i<code.length();i=i+8){
-					tstr=code.substring(i, i+8);
-					writer.write((char)Integer.parseInt(tstr,2));
-					System.out.println("maybe: "+ (char)Integer.parseInt(tstr,2));
-					System.out.println("maybe2: "+ tstr);
-					}
-				
-				writer.write(new Integer(remainder).toString());
-			
-				for (int i = 0; i < code.length(); i += 8)//o(n)
-			{
-				System.out.println("Checking 8s starting from " +i + "of : " + code.length());
-				//incase code.length%8 !=0 we should make a sign so we know how to decompress it later
-				
-
-				if (code.substring(i).length() < 8)
-				{
-					System.out.println("Code %8 !=0 ! ");//DEBUG
-					String last = code.substring(i);
-					System.out.println("last length : " + last.length());
-					int oCounter=0;
-					while (last.length() < 8) { //example: last is 3 bits
-						last += '0';//adding 5 0's
-						oCounter++;
-						System.out.println("adding 0"); //DEBUG
-					}
-					byte b_last[] = last.getBytes();//b_last is 
-					String temp = new String(b_last,"Ascii");
-					System.out.println("temp string: " + temp);//DEBUG
-					int new_val =  Integer.parseInt(temp,2);
-					System.out.println("new val: " + new_val);//DEBUG
-					System.out.println((char)new_val);
-					writer.write((char)new_val);
-					writer.write(new Integer(oCounter).toString());
-					//writer.write("eof");
-					break;
-				}
-				else
-				{
-					
-					byte [] b = code.substring(i,i+8).getBytes();
-					String temp = new String(b,"Ascii");
-					System.out.println(temp);//DEBUG
-					int new_val =  Integer.parseInt(temp,2);
-					System.out.println(new_val);//DEBUG 
-					
-				
-			
-		} }}
-		catch (IOException e) {  e.printStackTrace();}
-		finally
-		{
-			try
-			{writer.close();} 
-			catch (Exception e) {e.printStackTrace();}
-		}*/
-
 	
 	@Override
 	public void Decompress(String[] input_names, String[] output_names)
 	{
-		long startTime = System.currentTimeMillis();
+		long startTimed = System.currentTimeMillis();
 		System.out.println("starting Decompression");//DEBUG
 		String binStr="";//BinaryString
 		Queue<Character> binQ = new LinkedList<Character>();
 		try {
 			FileInputStream in = new FileInputStream(input_names[0]);
 			//TODO: add a way to read the tree
-			//in.read(reciver);
+
 			int data = in.read();//Read chars from the coded file
 			int leftover0s=0;
+			leftover0s=data;//Find how many 0s we added
 			while(data != -1) {
-				byte temp=(byte)in.read();
-				//String temp=Integer.toBinaryString((byte)data);
-				String s1 = String.format("%8s", Integer.toBinaryString(temp & 0xFF)).replace(' ', '0');
-				if(s1.length()<8) s1=String.format("%8s", s1).replace(' ', '0');
-				System.out.println(s1);
+				String temp=Integer.toBinaryString(data);
+				if(temp.length()<8) temp=String.format("%8s", temp).replace(' ', '0');
 				
-				//System.out.println(temp);
 				binStr=binStr+temp;  
 				data = in.read();
 				}
-			leftover0s=(binStr.charAt(binStr.length()-1))-48;//Find how many 0s we added (ASCII so -48)
-		      for(int i=0; i<binStr.length()-leftover0s-1; i++){
+			in.close();
+			
+		      for(int i=8; i<binStr.length()-leftover0s; i++){
 		          binQ.add(binStr.charAt(i));
 		       }
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -270,11 +183,12 @@ public class HufmannEncoderDecoder implements compressor
 			writer.write(decode(binQ));
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+long endTimed = System.currentTimeMillis();
 		
+		System.out.println("Decomp took " + ((endTimed - startTimed)/1000) + " seconds");
 		
 	}
 	
@@ -289,10 +203,8 @@ public class HufmannEncoderDecoder implements compressor
 		if(root.getLeft()==null && root.getRight()==null){
 			return root.get_char();
 		}
-		System.out.println(binQ.peek());//DEBUG
 		if(binQ.poll()=='0'){//PROBLEM: Gets to null
-			if(root.getLeft()==null) return root.get_char();
-			else return decodeRec(root.getLeft(),binQ);
+			return decodeRec(root.getLeft(),binQ);
 		}
 		
 		return decodeRec(root.getRight(),binQ);
@@ -329,7 +241,6 @@ public class HufmannEncoderDecoder implements compressor
 	@Override
 	public byte[] DecompressWithArray(String[] input_names, String[] output_names)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
