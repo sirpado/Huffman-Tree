@@ -161,9 +161,27 @@ public class HufmannEncoderDecoder implements compressor
 			fos.write((byte)zeroCounter);
 			System.out.println("Code 0s: (before comp)" + zeroCounter);
 			String treeString=root.writeTree(root,"");//Binary string of tree (1 - leaf, 0 - internal node)
-			System.out.println("tree String (before): " + treeString);
+			int counter =8- treeString.length()%8;
+			int treestringlength = treeString.length()/8;
+			String zeroes = "";
+			while(counter != 0)
+			{
+				zeroes += '0';
+				counter--;
+			}
+			String midlle = treeString.substring(treestringlength,treeString.length());
+			treeString = treeString.substring(0, treestringlength) + zeroes+ midlle;
+			treestringlength = treeString.length()/8;
+			fos.write((byte)treestringlength);
+			for (int i = 0; i < treestringlength;i = i+8)
+			{
+				fos.write((byte)(Integer.parseInt(treeString.substring(i,i+8),2)));
+			}
+			//code: <zeroes in code-byte><treeStringLength-byte><tree string> .........we need to add <file>
+			/*System.out.println("tree String (before): " + treeString);
 			int treeStringSize0s=0;
 			int treeString0s=0;
+			System.out.println("tree string length: "+treeString.length());
 			String treeStringSize=Integer.toBinaryString(treeString.length());
 			System.out.println("treeStringsize(before): "+treeStringSize);
 			while(treeStringSize.length()%8!=0) {
@@ -180,10 +198,8 @@ public class HufmannEncoderDecoder implements compressor
 			fos.write((byte)Integer.parseInt(treeStringSize.substring(0, 8),2));
 			fos.write((byte)Integer.parseInt(treeStringSize.substring(8, 16),2));
 			System.out.println("tree string 0s : (before comp) : " + treeString0s);
-			fos.write((byte)(treeString0s));//
-			code=treeString+code;
+			fos.write((byte)(treeString0s));//*/
 			
-
 			for(int i=0;i<code.length();i=i+8)//TODO
 			{
 				tstr=code.substring(i, i+8);
@@ -216,8 +232,16 @@ public class HufmannEncoderDecoder implements compressor
 			int leftover0s=0;
 			leftover0s=data;//Find how many 0s we added		
 			System.out.println("code zeros after dec: " + leftover0s);
-			////////////////////////////////////////////////
 			data=in.read();
+			int treeStringLength = data;
+			StringBuilder treeString = new StringBuilder();
+			for (int i = 0; i < treeStringLength; i++)
+			{
+				data=in.read();
+				treeString.append(Integer.toBinaryString(data));	
+			}
+			////////////////////////////////////////////////
+		/*	data=in.read();
 			int TreeStringSize0s=data;
 
 
@@ -239,14 +263,12 @@ public class HufmannEncoderDecoder implements compressor
 			data=in.read();
 			int treeString0s=data;
 			String treeString="";
-			int dor = treeStringSizeInt-treeString0s;
-			System.out.println("dor: "+dor);
-			for(int i=0;i<((treeStringSizeInt)*8-treeString0s);i+=8){
+			for(int i=0;i<treeStringSizeInt;i=i+8){
 				data=in.read();
 				String tmp2=Integer.toBinaryString(data);
-				if(tmp2.length()<8) tmp2=String.format("%8s", tmp2).replace(' ', '0');
+				//if(tmp2.length()<8) tmp2=String.format("%8s", tmp2).replace(' ', '0');
 				treeString+=tmp2;
-			}
+			}*/
 			data=in.read();
 			//////////////////////////////////////////////////
 			while(data != -1) {
@@ -260,7 +282,7 @@ public class HufmannEncoderDecoder implements compressor
 			testfile(binStr.toString(),"C:\\Users\\sirpa\\Documents\\eclipse-projects\\Huffman\\src\\assign1\\test2.txt");
 
 			//Breaking the metadata<5 bytes>
-			//Code: <zeroCounter(1byte)><treeStringSize0s(3bits)><treeStringsize(2 bytes)><treeString0s(byte)><treeString (up to 511 bits)<code>
+			//code: <zeroes in code-byte><treeStringLength-byte><tree string> <file>
 			String temp="";
 			Queue<Character> treeQ = new LinkedList<Character>();
 			int counter=0;
@@ -287,7 +309,8 @@ public class HufmannEncoderDecoder implements compressor
 			testfile(ss, "C:\\Users\\sirpa\\Documents\\eclipse-projects\\Huffman\\src\\assign1\\ss.txt");//(DELETE)
 			//		System.out.println("dec code length : " + (binStr.length()-(30+treeStringSize)));
 			System.out.println(' ');
-			for(int i=32+treeString.length(); i<binStr.length()-leftover0s; i++){
+			for(int i=0; i<binStr.length()-leftover0s; i++){
+				System.out.println("Im Stuck "+i);
 				binQ.add(binStr.charAt(i));
 			}
 
@@ -309,12 +332,12 @@ public class HufmannEncoderDecoder implements compressor
 
 
 	public String decode(Queue<Character> binQ,HuffmanNode root){
-		String decodedStr="";
+		StringBuilder decodedStr=new StringBuilder();
 		System.out.println("Decoding...");
 		while(!binQ.isEmpty()){
-			decodedStr=decodedStr + decodeRec(root,binQ);
+			decodedStr.append(decodeRec(root,binQ));
 		}
-		return decodedStr;
+		return decodedStr.toString();
 	}
 	public char decodeRec(HuffmanNode root,Queue<Character> binQ){
 		if(root.getLeft()==null && root.getRight()==null){
