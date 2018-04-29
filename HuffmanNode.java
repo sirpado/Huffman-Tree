@@ -116,6 +116,7 @@ public class HuffmanNode
     		while (temp.length() < 8) temp.insert(0, '0');
     		_tree+=tree;//For recursion
     		_tree+=temp;
+    		
     	}
     	else {_tree+='0';
     	if(root.getLeft()!=null)_tree=writeTree(root.left,_tree);
